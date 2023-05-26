@@ -3,6 +3,7 @@ import { selectUser } from 'redux/auth/selectors';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box } from './UserMenu.styled';
+import { Link } from 'react-router-dom';
 
 const UserMenu = () => {
   const dispatch = useDispatch();
@@ -10,6 +11,9 @@ const UserMenu = () => {
 
   return (
     <Box>
+      <Link className="form-button" to="/contacts">
+        To Contacts
+      </Link>
       <p>
         Привіт! <b>{user.email}</b>{' '}
       </p>
