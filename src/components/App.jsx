@@ -1,28 +1,45 @@
-import { ContactForm } from './ContactForm/ContactForm';
-import { ContactList } from './ContactList/ContactList';
-import { Filter } from './Filter/Filter';
-import { Container, Title, TitleH2 } from '../components/App.styled';
-import { useDispatch, useSelector } from 'react-redux';
+import { Route, Routes } from 'react-router';
+import Layout from './layout/layout';
+import { RestrictedRoute } from './RestrictedRoute';
+import RegisterPage from 'pages/RegisterPage';
+import LoginPage from 'pages/LoginPage';
+import ContactsPage from 'pages/ContactsPage';
+import { PrivateRoute } from './PrivateRoute';
+import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
-import { fetchContacts } from 'redux/operation';
-import spinner from 'components/spinner/spinner';
-import { IsLoading, filteredContacts } from 'redux/selectors';
+import { refreshUser } from 'redux/auth/operations';
 
 export const App = () => {
-  const filterListContacts = useSelector(filteredContacts);
   const dispatch = useDispatch();
-  const loader = useSelector(IsLoading);
+
   useEffect(() => {
-    dispatch(fetchContacts());
+    dispatch(refreshUser());
   }, [dispatch]);
   return (
-    <Container>
-      <Title>Phonebook</Title>
-      <ContactForm />
-      <TitleH2>Contacts</TitleH2>
-      <Filter />
-      {loader ? spinner() : <ContactList />}
-      {!filterListContacts.length && !loader && <h2>No contacts</h2>}
-    </Container>
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route
+          path="register"
+          element={
+            <RestrictedRoute
+              redirectTo="/contacts"
+              component={<RegisterPage />}
+            />
+          }
+        />
+        <Route
+          path="login"
+          element={
+            <RestrictedRoute redirectTo="/contacts" component={<LoginPage />} />
+          }
+        />
+        <Route
+          path="contacts"
+          element={
+            <PrivateRoute redirectTo="/login" component={<ContactsPage />} />
+          }
+        />
+      </Route>
+    </Routes>
   );
 };
